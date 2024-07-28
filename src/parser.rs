@@ -13,7 +13,7 @@ use nom::{
 /// Parses an ASCII-encoded `u32` value from a byte slice, terminated by a specified ASCII character.
 /// Fails if the number does not fit in an u32, if it is not terminated, or if
 /// it is terminated by a different character.
-pub(self) fn ascii_u32_terminated_by(input: &[u8], terminator: u8) -> IResult<&[u8], u32> {
+fn ascii_u32_terminated_by(input: &[u8], terminator: u8) -> IResult<&[u8], u32> {
     // Parse the digit
     let (input, n) = digit1(input)?;
 
@@ -21,7 +21,7 @@ pub(self) fn ascii_u32_terminated_by(input: &[u8], terminator: u8) -> IResult<&[
     let (input, _) = tag(&[terminator])(input)?;
 
     let n_str = str::from_utf8(n).unwrap(); // will always be a valid UTF-8 str as digit1 did not return an Err
-    let n = u32::from_str_radix(&n_str, 10).unwrap(); // will always be a valid digit as digit1 did not return an Err
+    let n = n_str.parse::<u32>().unwrap(); // will always be a valid digit as digit1 did not return an Err
 
     Ok((input, n))
 }
@@ -37,7 +37,7 @@ impl Word2VecHeader {
         // The header is encoded like this:
         // <ASCII embeddings_count><SPACE><ASCII embeddings_dim><LF>
 
-        let (bytes, embeddings_count) = ascii_u32_terminated_by(input, ' ' as u8).unwrap();
+        let (bytes, embeddings_count) = ascii_u32_terminated_by(input, b' ').unwrap();
         let (bytes, embeddings_dim) = ascii_u32_terminated_by(bytes, 0x0A).unwrap(); // 0x0A is a Line Feed
 
         let header = Word2VecHeader {
@@ -55,7 +55,7 @@ pub(crate) struct Word2VecEmbedding {
     pub(crate) embedding: Vec<f32>,
 }
 
-pub(self) fn string_terminated_by(input: &[u8], terminator: u8) -> IResult<&[u8], String> {
+fn string_terminated_by(input: &[u8], terminator: u8) -> IResult<&[u8], String> {
     // Take everything till terminator
     let (input, s) = take_till1(|c| c == terminator)(input)?;
 
@@ -73,7 +73,7 @@ impl Word2VecEmbedding {
         // Each embedding is encoded like this:
         // <ASCII word><SPACE><N adjacent 32-bit floats with little endian ordering>
 
-        let (bytes, word) = string_terminated_by(input, ' ' as u8).unwrap();
+        let (bytes, word) = string_terminated_by(input, b' ').unwrap();
 
         // we have f32_len * embeddings_dim bytes that represents our embeddings
         let (bytes, embedding) = take(embeddings_dim as usize * std::mem::size_of::<f32>())(bytes)?;
@@ -131,12 +131,12 @@ mod tests {
 
     #[test]
     fn test_ascii_u32_terminated_by_ok() {
-        let n = 923732897 as u32;
+        let n = 923732897_u32;
         let delimiter = ';';
 
         let s = format!("{n}{delimiter}");
 
-        let (input, n_parsed) = ascii_u32_terminated_by(s.as_bytes(), ';' as u8).unwrap();
+        let (input, n_parsed) = ascii_u32_terminated_by(s.as_bytes(), b';').unwrap();
 
         assert_eq!(input, &[]);
         assert_eq!(n_parsed, n);
@@ -149,7 +149,7 @@ mod tests {
 
         let s = format!("23374ciao123{delimiter}");
 
-        ascii_u32_terminated_by(s.as_bytes(), ';' as u8).unwrap();
+        ascii_u32_terminated_by(s.as_bytes(), b';').unwrap();
     }
 
     #[test]
@@ -157,7 +157,7 @@ mod tests {
     fn test_ascii_u32_terminated_by_delimiter_not_found() {
         let delimiter = ';';
 
-        let s = format!("236274.");
+        let s = "236274.";
 
         ascii_u32_terminated_by(s.as_bytes(), delimiter as u8).unwrap();
     }

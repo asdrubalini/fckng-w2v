@@ -13,7 +13,7 @@ fn main() {
     let file_len: Byte = File::open(f).unwrap().metadata().unwrap().len().into();
 
     let start = Instant::now();
-    let w2v = Word2Vec::new(f);
+    let _w2v = Word2Vec::new(f);
     let stop = Instant::now();
 
     let took = stop - start;
