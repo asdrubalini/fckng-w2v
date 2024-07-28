@@ -1,5 +1,5 @@
 {
-  description = "Seminal";
+  description = "sperm";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -74,14 +74,14 @@
 
         # Build the actual crate itself, reusing the dependency
         # artifacts from above.
-        seminal = craneLib.buildPackage (commonArgs // {
+        sperm = craneLib.buildPackage (commonArgs // {
           inherit cargoArtifacts;
         });
       in
       {
         checks = {
           # Build the crate as part of `nix flake check` for convenience
-          inherit seminal;
+          inherit sperm;
 
           # Run clippy (and deny all warnings) on the crate source,
           # again, reusing the dependency artifacts from above.
@@ -89,34 +89,34 @@
           # Note that this is done as a separate derivation so that
           # we can block the CI if there are issues here, but not
           # prevent downstream consumers from building our crate by itself.
-          seminal-clippy = craneLib.cargoClippy (commonArgs // {
+          sperm-clippy = craneLib.cargoClippy (commonArgs // {
             inherit cargoArtifacts;
             cargoClippyExtraArgs = "--all-targets -- --deny warnings";
           });
 
-          seminal-doc = craneLib.cargoDoc (commonArgs // {
+          sperm-doc = craneLib.cargoDoc (commonArgs // {
             inherit cargoArtifacts;
           });
 
           # Check formatting
-          seminal-fmt = craneLib.cargoFmt {
+          sperm-fmt = craneLib.cargoFmt {
             inherit src;
           };
 
           # Audit dependencies
-          seminal-audit = craneLib.cargoAudit {
+          sperm-audit = craneLib.cargoAudit {
             inherit src advisory-db;
           };
 
           # Audit licenses
-          seminal-deny = craneLib.cargoDeny {
+          sperm-deny = craneLib.cargoDeny {
             inherit src;
           };
 
           # Run tests with cargo-nextest
-          # Consider setting `doCheck = false` on `seminal` if you do not want
+          # Consider setting `doCheck = false` on `sperm` if you do not want
           # the tests to run twice
-          seminal-nextest = craneLib.cargoNextest (commonArgs // {
+          sperm-nextest = craneLib.cargoNextest (commonArgs // {
             inherit cargoArtifacts;
             # partitions = 1;
             # partitionType = "count";
@@ -124,11 +124,11 @@
         };
 
         packages = {
-          default = seminal;
+          default = sperm;
         };
 
         apps.default = flake-utils.lib.mkApp {
-          drv = seminal;
+          drv = sperm;
         };
 
         devShells.default = craneLib.devShell {

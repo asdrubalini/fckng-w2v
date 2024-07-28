@@ -12,11 +12,14 @@ fn main() {
 
     let file_len: Byte = File::open(f).unwrap().metadata().unwrap().len().into();
 
-    let start = Instant::now();
-    let _w2v = Word2Vec::new(f);
-    let stop = Instant::now();
+    let took = {
+        let start = Instant::now();
+        let _w2v = Word2Vec::new(f);
+        let stop = Instant::now();
 
-    let took = stop - start;
+        stop - start
+    };
+
     let bytes_per_second = file_len.divide(took.as_secs() as usize).unwrap();
 
     println!(

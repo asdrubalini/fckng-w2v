@@ -79,9 +79,9 @@ impl Word2VecEmbedding {
         let (bytes, embedding) = take(embeddings_dim as usize * std::mem::size_of::<f32>())(bytes)?;
 
         // dimensions are stored next to each other as 32-bit floats with little endian ordering
-        let (remaning, embedding) = count(le_f32, 300usize)(embedding)?;
+        let (remaning, embedding) = count(le_f32, embeddings_dim as usize)(embedding)?;
 
-        assert_eq!(remaning.len(), 0); // we should be at the end of what we've taken
+        assert_eq!(remaning.len(), 0); // we should be at the end of what we've taken if the header is to be trusted
 
         Ok((bytes, Word2VecEmbedding { word, embedding }))
     }
@@ -160,5 +160,32 @@ mod tests {
         let s = "236274.";
 
         ascii_u32_terminated_by(s.as_bytes(), delimiter as u8).unwrap();
+    }
+
+    #[test]
+    fn test_string_terminated_by_ok() {
+        let s = "Porco dio";
+        let terminator = '/';
+
+        let s_in = format!("{s}{terminator}");
+
+        let (bytes, s_out) = string_terminated_by(s_in.as_bytes(), terminator as u8).unwrap();
+
+        assert_eq!(bytes, &[]);
+        assert_eq!(s_out, s);
+    }
+
+    #[test]
+    fn test_word2vec_header_parse() {
+        let embeddings_count = 200000;
+        let embeddings_dim = 256;
+
+        let header = format!("{embeddings_count} {embeddings_dim}\n");
+
+        let (bytes, header) = Word2VecHeader::parse(header.as_bytes()).unwrap();
+
+        assert_eq!(bytes, &[]);
+        assert_eq!(header.embeddings_count, embeddings_count);
+        assert_eq!(header.embeddings_dim, embeddings_dim);
     }
 }

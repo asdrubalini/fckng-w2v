@@ -397,15 +397,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c107b6f4780854c8b126e228ea8869f4d7b71260f962fefb57b996b8959ba6b"
 
 [[package]]
-name = "seminal"
-version = "0.0.0"
-dependencies = [
- "byte-unit",
- "memmap2",
- "nom",
-]
-
-[[package]]
 name = "serde"
 version = "1.0.204"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -441,6 +432,15 @@ name = "simdutf8"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f27f6278552951f1f2b8cf9da965d10969b2efdea95a6ec47987ab46edfe263a"
+
+[[package]]
+name = "sperm"
+version = "0.0.0"
+dependencies = [
+ "byte-unit",
+ "memmap2",
+ "nom",
+]
 
 [[package]]
 name = "syn"
