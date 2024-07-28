@@ -143,9 +143,12 @@
             export RUST_SRC_PATH="${toolchain}/lib/rustlib/src/rust/library";
           '';
 
-          # Extra inputs can be added here; cargo and rustc are provided by default.
           packages = with pkgs; [
+            just
             xxd
+
+            zellij # tmux alternative
+            lurk # strace alternative
           ];
         };
       });
