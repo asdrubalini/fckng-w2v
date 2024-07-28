@@ -118,8 +118,8 @@
           # the tests to run twice
           seminal-nextest = craneLib.cargoNextest (commonArgs // {
             inherit cargoArtifacts;
-            partitions = 1;
-            partitionType = "count";
+            # partitions = 1;
+            # partitionType = "count";
           });
         };
 

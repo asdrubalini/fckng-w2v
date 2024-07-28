@@ -4,5 +4,6 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
+byte-unit = "5.1.4"
 memmap2 = "0.9.4"
 nom = "7.1.3"
