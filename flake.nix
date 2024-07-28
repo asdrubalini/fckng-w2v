@@ -1,5 +1,5 @@
 {
-  description = "sperm";
+  description = "fckng-w2v";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -74,14 +74,14 @@
 
         # Build the actual crate itself, reusing the dependency
         # artifacts from above.
-        sperm = craneLib.buildPackage (commonArgs // {
+        fckng-w2v = craneLib.buildPackage (commonArgs // {
           inherit cargoArtifacts;
         });
       in
       {
         checks = {
           # Build the crate as part of `nix flake check` for convenience
-          inherit sperm;
+          inherit fckng-w2v;
 
           # Run clippy (and deny all warnings) on the crate source,
           # again, reusing the dependency artifacts from above.
@@ -89,34 +89,34 @@
           # Note that this is done as a separate derivation so that
           # we can block the CI if there are issues here, but not
           # prevent downstream consumers from building our crate by itself.
-          sperm-clippy = craneLib.cargoClippy (commonArgs // {
+          fckng-w2v-clippy = craneLib.cargoClippy (commonArgs // {
             inherit cargoArtifacts;
             cargoClippyExtraArgs = "--all-targets -- --deny warnings";
           });
 
-          sperm-doc = craneLib.cargoDoc (commonArgs // {
+          fckng-w2v-doc = craneLib.cargoDoc (commonArgs // {
             inherit cargoArtifacts;
           });
 
           # Check formatting
-          sperm-fmt = craneLib.cargoFmt {
+          fckng-w2v-fmt = craneLib.cargoFmt {
             inherit src;
           };
 
           # Audit dependencies
-          sperm-audit = craneLib.cargoAudit {
+          fckng-w2v-audit = craneLib.cargoAudit {
             inherit src advisory-db;
           };
 
           # Audit licenses
-          sperm-deny = craneLib.cargoDeny {
+          fckng-w2v-deny = craneLib.cargoDeny {
             inherit src;
           };
 
           # Run tests with cargo-nextest
-          # Consider setting `doCheck = false` on `sperm` if you do not want
+          # Consider setting `doCheck = false` on `fckng-w2v` if you do not want
           # the tests to run twice
-          sperm-nextest = craneLib.cargoNextest (commonArgs // {
+          fckng-w2v-nextest = craneLib.cargoNextest (commonArgs // {
             inherit cargoArtifacts;
             # partitions = 1;
             # partitionType = "count";
@@ -124,11 +124,11 @@
         };
 
         packages = {
-          default = sperm;
+          default = fckng-w2v;
         };
 
         apps.default = flake-utils.lib.mkApp {
-          drv = sperm;
+          drv = fckng-w2v;
         };
 
         devShells.default = craneLib.devShell {
