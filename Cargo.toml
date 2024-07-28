@@ -2,6 +2,7 @@
 name = "seminal"
 version = "0.0.0"
 edition = "2021"
+license = "MIT"
 
 [dependencies]
 byte-unit = "5.1.4"

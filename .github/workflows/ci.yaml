@@ -12,4 +12,4 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-unstable
     - run: nix build '.#'
-    - run: nix run '.#checks.x86_64-linux.seminal-clippy'
+    - run: nix flake check
