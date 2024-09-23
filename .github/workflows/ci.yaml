@@ -1,4 +1,4 @@
-name: "fckng-w2v"
+name: "finanzaonline-db"
 on:
   pull_request:
   push:

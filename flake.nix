@@ -1,13 +1,10 @@
 {
-  description = "fckng-w2v";
+  description = "finanzaonline-db";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    crane = {
-      url = "github:ipetkov/crane";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    crane.url = "github:ipetkov/crane";
 
     fenix = {
       url = "github:nix-community/fenix";
@@ -74,14 +71,14 @@
 
         # Build the actual crate itself, reusing the dependency
         # artifacts from above.
-        fckng-w2v = craneLib.buildPackage (commonArgs // {
+        finanzaonline-db = craneLib.buildPackage (commonArgs // {
           inherit cargoArtifacts;
         });
       in
       {
         checks = {
           # Build the crate as part of `nix flake check` for convenience
-          inherit fckng-w2v;
+          inherit finanzaonline-db;
 
           # Run clippy (and deny all warnings) on the crate source,
           # again, reusing the dependency artifacts from above.
@@ -89,34 +86,34 @@
           # Note that this is done as a separate derivation so that
           # we can block the CI if there are issues here, but not
           # prevent downstream consumers from building our crate by itself.
-          fckng-w2v-clippy = craneLib.cargoClippy (commonArgs // {
+          finanzaonline-db-clippy = craneLib.cargoClippy (commonArgs // {
             inherit cargoArtifacts;
             cargoClippyExtraArgs = "--all-targets -- --deny warnings";
           });
 
-          fckng-w2v-doc = craneLib.cargoDoc (commonArgs // {
+          finanzaonline-db-doc = craneLib.cargoDoc (commonArgs // {
             inherit cargoArtifacts;
           });
 
           # Check formatting
-          fckng-w2v-fmt = craneLib.cargoFmt {
+          finanzaonline-db-fmt = craneLib.cargoFmt {
             inherit src;
           };
 
           # Audit dependencies
-          fckng-w2v-audit = craneLib.cargoAudit {
+          finanzaonline-db-audit = craneLib.cargoAudit {
             inherit src advisory-db;
           };
 
           # Audit licenses
-          fckng-w2v-deny = craneLib.cargoDeny {
+          finanzaonline-db-deny = craneLib.cargoDeny {
             inherit src;
           };
 
           # Run tests with cargo-nextest
-          # Consider setting `doCheck = false` on `fckng-w2v` if you do not want
+          # Consider setting `doCheck = false` on `finanzaonline-db` if you do not want
           # the tests to run twice
-          fckng-w2v-nextest = craneLib.cargoNextest (commonArgs // {
+          finanzaonline-db-nextest = craneLib.cargoNextest (commonArgs // {
             inherit cargoArtifacts;
             # partitions = 1;
             # partitionType = "count";
@@ -124,11 +121,11 @@
         };
 
         packages = {
-          default = fckng-w2v;
+          default = finanzaonline-db;
         };
 
         apps.default = flake-utils.lib.mkApp {
-          drv = fckng-w2v;
+          drv = finanzaonline-db;
         };
 
         devShells.default = craneLib.devShell {
@@ -145,10 +142,8 @@
 
           packages = with pkgs; [
             just
-            xxd
-
+            curl
             zellij # tmux alternative
-            lurk # strace alternative
           ];
         };
       });

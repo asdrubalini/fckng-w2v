@@ -1,29 +1,17 @@
-#![allow(dead_code)]
+use scraper::{Html, Selector};
 
-use std::{fs::File, time::Instant};
+fn main() -> anyhow::Result<()> {
+    let html = include_str!("../page.html");
+    let html = Html::parse_document(&html);
 
-use byte_unit::Byte;
-use parser::Word2Vec;
+    let s = Selector::parse("article.message").unwrap();
 
-mod parser;
+    let messages = html.select(&s);
+    for elem in messages {
+        let author = elem.attr("data-author").unwrap();
+        let message_url = elem.attr("itemid").unwrap();
+        println!("{:#?}", message_url);
+    }
 
-fn main() {
-    let f = "./GoogleNews-vectors-negative300.bin";
-
-    let file_len: Byte = File::open(f).unwrap().metadata().unwrap().len().into();
-
-    let took = {
-        let start = Instant::now();
-        let _w2v = Word2Vec::new(f);
-        let stop = Instant::now();
-
-        stop - start
-    };
-
-    let bytes_per_second = file_len.divide(took.as_secs() as usize).unwrap();
-
-    println!(
-        "{:.2} per second",
-        bytes_per_second.get_appropriate_unit(byte_unit::UnitType::Binary)
-    );
+    Ok(())
 }
